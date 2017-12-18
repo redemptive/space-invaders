@@ -3,11 +3,11 @@
 	width: 100px;
 }
 
-.bullet {
-	height: 100px;
-	width: 100px;
+#bullet {
+	height: 25px;
+	width: 10px;
 	position: absolute;
-	background-color: #000000;
+	background-color: #FF0000;
 	bottom: 10px;
 	left: 10px;
 }

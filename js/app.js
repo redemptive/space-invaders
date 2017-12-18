@@ -6,7 +6,8 @@ $(document).ready(function() {
 	var keyMap = {68: false, 65: false, 71: false};
 	var interval = setInterval(gameLoop, 20);
 	var bullet = "";
-	var bulletTemplate = "<div id=\"bullet\" style=\"height: 25px; width: 10px; z-index: 2; position: absolute; bottom: 10px; background-color: #FF0000\"></div>"
+	var bulletTemplate = "<div id=\"bullet\"></div>"
+	var aliens;
 
 	function init() {
 		for (var i = 0; i < alienRows; i++) {
@@ -15,8 +16,9 @@ $(document).ready(function() {
 				$("#" + i).append("<div class=\"alien col-md-" + (12 / alienColumns) + "\"><img src=\"assets/alien.png\" class=\" alien-img img-responsive\"></div>");
 			}
 		}
-		$("body").append("<div id=\"player\"></div>")
+		$("body").append("<div id=\"player\"></div>");
 		$("#player").append("<img src=\"assets/player.png\" height=\"40\">");
+		aliens = $(".alien");
 	}
 
 	$(document).keydown(function(e) {
@@ -29,6 +31,19 @@ $(document).ready(function() {
 		}
 	});
 
+	function collission(x1,y1,w1,h1,x2,y2,w2,h2) {
+		var r1 = w1 + x1;
+		var b1 = h1 + y1;
+		var r2 = w2 + x2;
+		var b2 = h2 + y2;
+						
+		if (x1 < r2 && r1 > x2 && y1 < b2 && b1 > y2) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	function gameLoop() {
 		if (keyMap[68]  && player.position().left < $(window).width() - 10 - player.width()) {
 			player.css("left", player.position().left + 10);
@@ -40,6 +55,11 @@ $(document).ready(function() {
 			bullet.css("left", player.position().left);
 		}
 		if (bullet != "") {
+			// for (var i = 0; i < aliens.length; i++) {
+			// 	if (collission(aliens[i].position().top, aliens[i].position().left, aliens[i].width(), aliens[i].height(),bullet.position().top, bullet.position().left, bullet.width(), bullet.height())) {
+			// 		alert("Collission");
+			// 	}
+			// }
 			if (bullet.position().top < 0) {
 				bullet.remove();
 				bullet = "";
@@ -50,4 +70,5 @@ $(document).ready(function() {
 
 	init();
 	var player = $("#player");
+	console.log($(".alien")[0].position());
 });
