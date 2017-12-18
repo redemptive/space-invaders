@@ -14,7 +14,7 @@ $(document).ready(function() {
 				$("#" + i).css("height", alienHeight + "px");
 			}
 		}
-		$(".container").append("<div id=\"player\">hi</div>");
+		$("body").append("<div id=\"player\"></div>");
 	}
 
 	$(document).keydown(function(e) {
@@ -28,8 +28,10 @@ $(document).ready(function() {
 	});
 
 	function gameLoop() {
-		if (keyMap[65] || keyMap[68]) {
-			console.log(keyMap);
+		if (keyMap[68]) {
+			$("#player").css("left", $("#player").position().left + 10);
+		} else if (keyMap[65]) {
+			$("#player").css("left", $("#player").position().left - 10);
 		}
 	}
 

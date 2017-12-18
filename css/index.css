@@ -4,8 +4,13 @@
 
 #player {
 	background-color: #FFFFFF;
+	height: 50px;
+	width: 50px;
+	position: absolute;
+	bottom: 50px;
+	left: 50px;
 }
 
 body {
-	background-color: #000000;
+	background-color: #000000; 
 }
