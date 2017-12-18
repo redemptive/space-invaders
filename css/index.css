@@ -1,9 +1,10 @@
-.alien {
-	background-color: #FF0000;
+.alien-img {
+	height: 100px;
+	width: 100px;
 }
 
 #player {
-	background-color: #FFFFFF;
+	background-color: #000000;
 	height: 50px;
 	width: 50px;
 	position: absolute;
