@@ -25,6 +25,12 @@ $(document).ready(function() {
 		this.buildHtml = function() {
 			return "<div id=\"" + this.id + "\" class=\"alien\" style=\"height:" + this.height + "px; width: " + this.width + "top: " + this.y + "px;left: " + this.x + "px;\"><img src=\"" + this.sprite + "\" class=\"alien-img\"></div>";
 		};
+		this.move = function(xMove, yMove) {
+			this.x += xMove;
+			this.y += yMove;
+			$("#" + this.id).css("top", this.y + "px");
+			$("#" + this.id).css("left", this.x + "px");
+		};
 		this.die = function() {
 			$("#" + this.id).remove();
 			aliens.splice(aliens.indexOf(this),1);
@@ -74,17 +80,28 @@ $(document).ready(function() {
 			bullet.css("left", player.position().left + "px");
 		}
 		if (bullet != "") {
-			for (var i = 0; i < aliens.length; i++) {
-				if (collission(aliens[i].x, aliens[i].y, aliens[i].width, aliens[i].height,bullet.position().left, bullet.position().top, bullet.width(), bullet.height())) {
-					console.log("Collission");
-					aliens[i].die();
-				}
-				
-			}
 			bullet.css("top", bullet.position().top - 10 + "px");
 			if (bullet.position().top < 0) {
 				bullet.remove();
 				bullet = "";
+			}
+		}
+		if (aliens[aliens.length - 1].x > $(window).width() - 10 && alienDirection == "right") {
+			alienDirection = "left";
+		} else if (aliens[0].x < 0 && alienDirection == "left") {
+			alienDirection = "right";
+		}
+		for (var i = 0; i < aliens.length; i++) {
+			if (alienDirection == "right") {
+				aliens[i].move(10,0);
+			} else {
+				aliens[i].move(-10,0);
+			}
+			if (bullet != "") {
+				if (collission(aliens[i].x, aliens[i].y, aliens[i].width, aliens[i].height,bullet.position().left, bullet.position().top, bullet.width(), bullet.height())) {
+					console.log("Collission");
+					aliens[i].die();
+				}
 			}
 		}
 	}
