@@ -1,2 +1,15 @@
+## Title
+
 # space-invaders
-Space invaders in HTML, CSS and Javascript
+
+## Description
+A simple browser based space invaders game
+
+## Technologies
+- HTML
+- CSS
+- JavaScript
+- JQuery
+
+## Installation and usage
+Simply clone the repository and open index.html to play
