@@ -28,12 +28,13 @@ $(document).ready(function() {
 	});
 
 	function gameLoop() {
-		if (keyMap[68]) {
-			$("#player").css("left", $("#player").position().left + 10);
-		} else if (keyMap[65]) {
-			$("#player").css("left", $("#player").position().left - 10);
+		if (keyMap[68]  && player.position().left < $(window).width() - 10 - player.width()) {
+			player.css("left", player.position().left + 10);
+		} else if (keyMap[65] && player.position().left > 10) {
+			player.css("left", player.position().left - 10);
 		}
 	}
 
 	init();
+	var player = $("#player");
 });
