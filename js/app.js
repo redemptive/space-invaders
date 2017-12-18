@@ -6,8 +6,13 @@ $(document).ready(function() {
 	var keyMap = {68: false, 65: false, 71: false};
 	var interval = setInterval(gameLoop, 20);
 	var bullet = "";
-	var bulletTemplate = "<div id=\"bullet\"></div>"
 	var aliens = [];
+
+	var laser = {
+		buildHtml: function() {
+			return "<div id=\"bullet\"></div>";
+		}
+	}
 
 	function alien(x, y, id) {
 		this.x = x;
@@ -18,8 +23,9 @@ $(document).ready(function() {
 		this.sprite = "assets/alien.png";
 		this.buildHtml = function() {
 			return "<div id=\"" + this.id + "\" class=\"alien\" style=\"height:" + this.height + "px; width: " + this.width + "top: " + this.y + "px;left: " + this.x + "px;\"><img src=\"" + this.sprite + "\" class=\"alien-img\"></div>";
-		},
+		};
 		this.die = function() {
+			$("#" + this.id).remove();
 			aliens.splice(aliens.indexOf(this),1);
 		}
 	}
@@ -62,7 +68,7 @@ $(document).ready(function() {
 		} else if (keyMap[65] && player.position().left > 10) {
 			player.css("left", player.position().left - 10);
 		} else if (keyMap[71] && bullet == "") {
-			$("body").append(bulletTemplate);
+			$("body").append(laser.buildHtml());
 			bullet = $("#bullet");
 			bullet.css("left", player.position().left + "px");
 		}
@@ -70,16 +76,15 @@ $(document).ready(function() {
 			for (var i = 0; i < aliens.length; i++) {
 				if (collission(aliens[i].x, aliens[i].y, aliens[i].width, aliens[i].height,bullet.position().left, bullet.position().top, bullet.width(), bullet.height())) {
 					console.log("Collission");
-					$("#" + aliens[i].id).remove();
 					aliens[i].die();
 				}
 				
 			}
+			bullet.css("top", bullet.position().top - 10 + "px");
 			if (bullet.position().top < 0) {
 				bullet.remove();
 				bullet = "";
 			}
-			bullet.css("top", bullet.position().top - 10 + "px");
 		}
 	}
 
