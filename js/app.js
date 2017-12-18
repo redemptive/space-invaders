@@ -5,13 +5,27 @@ $(document).ready(function() {
 	//68 = right, 65 = left, 71 = g(fire)
 	var keyMap = {68: false, 65: false, 71: false};
 	var interval = setInterval(gameLoop, 20);
-	var bullet = "";
 	var aliens = [];
+	var lasers = [];
 	var alienDirection = "right";
 
-	var laser = {
-		buildHtml: function() {
-			return "<div id=\"bullet\"></div>";
+	function laser(x, y, ySpeed, id) {
+		this.x = x;
+		this.y = y;
+		this.height = 25;
+		this.width = 10;
+		this.id = id;
+		this.ySpeed = ySpeed;
+		this.move = function() {
+			this.y += this.ySpeed;
+			$(".bullet#" + this.id).css("top", this.y + "px");
+		};
+		this.buildHtml = function() {
+			return "<div id=\"" + this.id + "\" class=\"bullet\" style=\"height: " + this.height + "px; width: " + this.width + "px; top: " + this.y + "px;left: " + this.x + "px;\"></div>";
+		};
+		this.die = function() {
+			$(".bullet#" + this.id).remove();
+			lasers.splice(aliens.indexOf(this),1);
 		}
 	}
 
@@ -28,11 +42,11 @@ $(document).ready(function() {
 		this.move = function(xMove, yMove) {
 			this.x += xMove;
 			this.y += yMove;
-			$("#" + this.id).css("top", this.y + "px");
-			$("#" + this.id).css("left", this.x + "px");
+			$(".alien#" + this.id).css("top", this.y + "px");
+			$(".alien#" + this.id).css("left", this.x + "px");
 		};
 		this.die = function() {
-			$("#" + this.id).remove();
+			$(".alien#" + this.id).remove();
 			aliens.splice(aliens.indexOf(this),1);
 		}
 	}
@@ -74,16 +88,14 @@ $(document).ready(function() {
 			player.css("left", player.position().left + 10);
 		} else if (keyMap[65] && player.position().left > 10) {
 			player.css("left", player.position().left - 10);
-		} else if (keyMap[71] && bullet == "") {
-			$("body").append(laser.buildHtml());
-			bullet = $("#bullet");
-			bullet.css("left", player.position().left + "px");
+		} else if (keyMap[71] && lasers.length == 0) {
+			lasers.push(new laser(player.position().left, player.position().top, -10,0));
+			$("body").append(lasers[0].buildHtml());
 		}
-		if (bullet != "") {
-			bullet.css("top", bullet.position().top - 10 + "px");
-			if (bullet.position().top < 0) {
-				bullet.remove();
-				bullet = "";
+		if (lasers.length > 0) {
+			lasers[0].move();
+			if (lasers[0].y < 0) {
+				lasers[0].die();
 			}
 		}
 		if (aliens[aliens.length - 1].x > $(window).width() - aliens[0].width && alienDirection == "right") {
@@ -97,8 +109,8 @@ $(document).ready(function() {
 			} else {
 				aliens[i].move(-10,0);
 			}
-			if (bullet != "") {
-				if (collission(aliens[i].x, aliens[i].y, aliens[i].width, aliens[i].height,bullet.position().left, bullet.position().top, bullet.width(), bullet.height())) {
+			if (lasers.length > 0) {
+				if (collission(aliens[i].x, aliens[i].y, aliens[i].width, aliens[i].height,lasers[0].x, lasers[0].y, lasers[0].width, lasers[0].height)) {
 					console.log("Collission");
 					aliens[i].die();
 				}

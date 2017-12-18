@@ -1,6 +1,6 @@
 Make the aliens shoot
 Implement Score
 Make the player an object
-Make the bullets an object
 Implement levels
 Implement start screen
+Make the aliens have different sprites
