@@ -7,6 +7,7 @@ $(document).ready(function() {
 	var interval = setInterval(gameLoop, 20);
 	var bullet = "";
 	var aliens = [];
+	var alienDirection = "right";
 
 	var laser = {
 		buildHtml: function() {
