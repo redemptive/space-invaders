@@ -1,24 +1,36 @@
 $(document).ready(function() {
-	var alienRows = 2;
-	var alienColumns = 4;
+
+	var alienNumber = 6;
 	var alienHeight = 100;
 	//68 = right, 65 = left, 71 = g(fire)
 	var keyMap = {68: false, 65: false, 71: false};
 	var interval = setInterval(gameLoop, 20);
 	var bullet = "";
 	var bulletTemplate = "<div id=\"bullet\"></div>"
-	var aliens;
+	var aliens = [];
+
+	function alien(x, y, id) {
+		this.x = x;
+		this.y = y;
+		this.id = id;
+		this.height = 100;
+		this.width = 100;
+		this.sprite = "assets/alien.png";
+		this.buildHtml = function() {
+			return "<div id=\"" + this.id + "\" class=\"alien\" style=\"height:" + this.height + "px; width: " + this.width + "top: " + this.y + "px;left: " + this.x + "px;\"><img src=\"" + this.sprite + "\" class=\"alien-img\"></div>";
+		},
+		this.die = function() {
+			aliens.splice(aliens.indexOf(this),1);
+		}
+	}
 
 	function init() {
-		for (var i = 0; i < alienRows; i++) {
-			$(".container").append("<div id=\"" + i + "\" class=\"row\"></div>");
-			for (var j = 0; j < alienColumns; j++) {
-				$("#" + i).append("<div class=\"alien col-md-" + (12 / alienColumns) + "\"><img src=\"assets/alien.png\" class=\" alien-img img-responsive\"></div>");
-			}
+		for (var i = 0; i <	alienNumber; i++) {
+			aliens[i] = new alien(i*100, 0, i);
+			$("body").append(aliens[i].buildHtml());
 		}
 		$("body").append("<div id=\"player\"></div>");
 		$("#player").append("<img src=\"assets/player.png\" height=\"40\">");
-		aliens = $(".alien");
 	}
 
 	$(document).keydown(function(e) {
@@ -52,23 +64,25 @@ $(document).ready(function() {
 		} else if (keyMap[71] && bullet == "") {
 			$("body").append(bulletTemplate);
 			bullet = $("#bullet");
-			bullet.css("left", player.position().left);
+			bullet.css("left", player.position().left + "px");
 		}
 		if (bullet != "") {
-			// for (var i = 0; i < aliens.length; i++) {
-			// 	if (collission(aliens[i].position().top, aliens[i].position().left, aliens[i].width(), aliens[i].height(),bullet.position().top, bullet.position().left, bullet.width(), bullet.height())) {
-			// 		alert("Collission");
-			// 	}
-			// }
+			for (var i = 0; i < aliens.length; i++) {
+				if (collission(aliens[i].x, aliens[i].y, aliens[i].width, aliens[i].height,bullet.position().left, bullet.position().top, bullet.width(), bullet.height())) {
+					console.log("Collission");
+					$("#" + aliens[i].id).remove();
+					aliens[i].die();
+				}
+				
+			}
 			if (bullet.position().top < 0) {
 				bullet.remove();
 				bullet = "";
 			}
-			bullet.css("top", bullet.position().top - 10);
+			bullet.css("top", bullet.position().top - 10 + "px");
 		}
 	}
 
 	init();
 	var player = $("#player");
-	console.log($(".alien")[0].position());
 });

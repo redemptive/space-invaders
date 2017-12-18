@@ -1,6 +1,6 @@
 .alien-img {
-	height: 100px;
-	width: 100px;
+	max-width:100%;
+	max-height:100%;
 }
 
 #bullet {
@@ -23,4 +23,8 @@
 
 body {
 	background-color: #000000; 
+}
+
+.alien {
+	position: fixed;
 }
