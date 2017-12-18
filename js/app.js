@@ -1,6 +1,6 @@
 $(document).ready(function() {
 
-	var alienNumber = 6;
+	var alienNumber = 7;
 	var alienHeight = 100;
 	//68 = right, 65 = left, 71 = g(fire)
 	var keyMap = {68: false, 65: false, 71: false};
@@ -86,7 +86,7 @@ $(document).ready(function() {
 				bullet = "";
 			}
 		}
-		if (aliens[aliens.length - 1].x > $(window).width() - 10 && alienDirection == "right") {
+		if (aliens[aliens.length - 1].x > $(window).width() - aliens[0].width && alienDirection == "right") {
 			alienDirection = "left";
 		} else if (aliens[0].x < 0 && alienDirection == "left") {
 			alienDirection = "right";
