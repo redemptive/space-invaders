@@ -1,0 +1,5 @@
+Implement alien movement
+Make the aliens shoot
+Implement Score
+Make the player an object
+Make the bullets an object
