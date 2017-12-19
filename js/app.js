@@ -128,15 +128,19 @@ $(document).ready(function() {
 		}
 	}
 
-	function gameLoop() {
-		checkKeys();
-		manageLasers();
+	function spawnAliens() {
 		if (aliens.length < 1) {
 			for (var i = 0; i <	alienNumber; i++) {
 				aliens[i] = new alien(i*100, 0, i);
 				$("body").append(aliens[i].buildHtml());
 			}
 		}
+	}
+
+	function gameLoop() {
+		checkKeys();
+		manageLasers();
+		spawnAliens();
 		if (aliens[aliens.length - 1].x > $(window).width() - aliens[0].width && alienDirection == "right") {
 			alienDirection = "left";
 		} else if (aliens[0].x < 0 && alienDirection == "left") {
