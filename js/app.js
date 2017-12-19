@@ -11,6 +11,23 @@ $(document).ready(function() {
 	var alienFireCooldown = 5000;
 	var alienFireCounter = 0;
 	var score = 0;
+	var thePlayer = new player();
+
+	function player() {
+		this.x = 20;
+		this.y = $(window).height() - 60;
+		this.height = 40;
+		this.width = 40;
+		this.move = function(xMove, yMove) {
+			this.x += xMove;
+			this.y += yMove;
+			$("#player").css("top", this.y + "px");
+			$("#player").css("left", this.x + "px");
+		}
+		this.buildHtml = function() {
+			return "<div id=\"player\"><img src=\"assets/player.png\" width=\"" + this.width + "\" height=\"" + this.height + "\"></div>";
+		}
+	}
 
 	function laser(x, y, ySpeed, id) {
 		this.x = x;
@@ -59,9 +76,9 @@ $(document).ready(function() {
 			aliens[i] = new alien(i*100, 0, i);
 			$("body").append(aliens[i].buildHtml());
 		}
-		$("body").append("<div id=\"player\"></div>");
+		$("body").append(thePlayer.buildHtml());
 		$("body").append("<div id=\"score\">Score: " + score + "</div>");
-		$("#player").append("<img src=\"assets/player.png\" height=\"40\">");
+		console.log(thePlayer);
 	}
 
 	$(document).keydown(function(e) {
@@ -92,13 +109,12 @@ $(document).ready(function() {
 	}
 
 	function gameLoop() {
-		if (keyMap[68]  && player.position().left < $(window).width() - 10 - player.width()) {
-			player.css("left", player.position().left + 10);
-		} else if (keyMap[65] && player.position().left > 10) {
-			player.css("left", player.position().left - 10);
+		if (keyMap[68] && thePlayer.x < $(window).width() - 10 - thePlayer.width) {
+			thePlayer.move(10,0);
+		} else if (keyMap[65] && thePlayer.x > 10) {
+			thePlayer.move(-10,0);
 		} else if (keyMap[71] && lasers.length == 0) {
-			lasers.push(new laser(player.position().left, player.position().top, -10,lasers.length - 1));
-			console.log(lasers.length);
+			lasers.push(new laser(thePlayer.x, thePlayer.y, -10,lasers.length));
 			$("body").append(lasers[0].buildHtml());
 		}
 		if (lasers.length > 0) {
@@ -108,17 +124,17 @@ $(document).ready(function() {
 				lasers[0].die();
 			}
 		}
+		if (aliens.length < 1) {
+			for (var i = 0; i <	alienNumber; i++) {
+				aliens[i] = new alien(i*100, 0, i);
+				$("body").append(aliens[i].buildHtml());
+			}
+		}
 		if (aliens[aliens.length - 1].x > $(window).width() - aliens[0].width && alienDirection == "right") {
 			alienDirection = "left";
 		} else if (aliens[0].x < 0 && alienDirection == "left") {
 			alienDirection = "right";
 		}
-		// if (aliens.length < 1) {
-		// 	for (var i = 0; i <	alienNumber; i++) {
-		// 		aliens[i] = new alien(i*100, 0, i);
-		// 		$("body").append(aliens[i].buildHtml());
-		// 	}
-		// }
 		for (var i = 0; i < aliens.length; i++) {
 			if (alienDirection == "right") {
 				aliens[i].move(5 + score,0);
@@ -136,5 +152,4 @@ $(document).ready(function() {
 	}
 
 	init();
-	var player = $("#player");
 });
