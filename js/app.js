@@ -93,7 +93,7 @@ $(document).ready(function() {
 			$(".alien#" + this.id).css("left", this.x + "px");
 		};
 		this.fire = function() {
-			alienLasers.push(new alienLaser(this.x, this.y, 10, 0));
+			alienLasers.push(new alienLaser(this.x, this.y, 6 + score, 0));
 		};
 		this.die = function() {
 			$(".alien#" + this.id).remove();
@@ -198,6 +198,7 @@ $(document).ready(function() {
 			alienFireCounter = 0;
 		} else {
 			alienFireCounter++;
+			alienFireCooldown = 200 - (score * 5);
 		}
 		if (aliens.length < 1) {
 			spawnAliens();
