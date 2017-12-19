@@ -13,11 +13,14 @@
 }
 
 .alienLaser {
-	top:;
 	background-color: #FF0000;
 	position: absolute;
 	top: 0px;
 	left: 0px;
+}
+
+.endGame {
+	color: #00FF00;
 }
 
 #player {

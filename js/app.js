@@ -14,12 +14,14 @@ $(document).ready(function() {
 	var score = 0;
 	var thePlayer = new player();
 	var alienSprites = ["assets/alien.png","assets/alien2.png"];
+	var endGame = false;
 
 	function player() {
 		this.x = 20;
 		this.y = $(window).height() - 60;
 		this.height = 40;
 		this.width = 40;
+		this.lives = 3;
 		this.move = function(xMove, yMove) {
 			this.x += xMove;
 			this.y += yMove;
@@ -203,10 +205,24 @@ $(document).ready(function() {
 	}
 
 	function gameLoop() {
-		manageLasers();
-		checkKeys();
-		manageAliens();
-
+		if (!endGame) {
+			manageLasers();
+			checkKeys();
+			manageAliens();
+			if (alienLasers.length > 0) {
+				if (collission(thePlayer.x, thePlayer.y, thePlayer.width, thePlayer.height, alienLasers[0].x, alienLasers[0].y, alienLasers[0].width, alienLasers[0].height)) {
+					alienLasers[0].die();
+					thePlayer.lives --;
+					if (thePlayer.lives < 1) {
+						endGame = true;
+					}
+				}
+			}
+		} else {
+			clearInterval(interval);
+			$("body").empty();
+			$("body").append("<div class=\"endGame\"><h2>You died! Score: " + score + "</h2></div>")
+		}
 	}
 
 	init();
