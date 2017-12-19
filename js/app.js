@@ -107,7 +107,7 @@ $(document).ready(function() {
 		$("#score").text("Score: " + score);
 	}
 
-	function gameLoop() {
+	function checkKeys() {
 		if (keyMap[68] && thePlayer.x < $(window).width() - 10 - thePlayer.width) {
 			thePlayer.move(10,0);
 		} else if (keyMap[65] && thePlayer.x > 10) {
@@ -116,6 +116,10 @@ $(document).ready(function() {
 			lasers.push(new laser(thePlayer.x, thePlayer.y, -10,0));
 			$("body").append(lasers[0].buildHtml());
 		}
+	}
+
+	function gameLoop() {
+		checkKeys();
 		console.log(lasers[0]);
 		if (lasers.length > 0) {
 			lasers[0].move(0,-10);
