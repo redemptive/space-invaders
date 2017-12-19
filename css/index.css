@@ -26,3 +26,8 @@ body {
 .alien {
 	position: fixed;
 }
+
+#score {
+	color: #FFFFFF;
+	font-family: "Courier New";
+}

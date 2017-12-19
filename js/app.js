@@ -10,6 +10,7 @@ $(document).ready(function() {
 	var alienDirection = "right";
 	var alienFireCooldown = 5000;
 	var alienFireCounter = 0;
+	var score = 0;
 
 	function laser(x, y, ySpeed, id) {
 		this.x = x;
@@ -59,6 +60,7 @@ $(document).ready(function() {
 			$("body").append(aliens[i].buildHtml());
 		}
 		$("body").append("<div id=\"player\"></div>");
+		$("body").append("<div id=\"score\">Score: " + score + "</div>");
 		$("#player").append("<img src=\"assets/player.png\" height=\"40\">");
 	}
 
@@ -85,6 +87,10 @@ $(document).ready(function() {
 		}
 	}
 
+	function updateScore() {
+		$("#score").text("Score: " + score);
+	}
+
 	function gameLoop() {
 		if (keyMap[68]  && player.position().left < $(window).width() - 10 - player.width()) {
 			player.css("left", player.position().left + 10);
@@ -107,15 +113,22 @@ $(document).ready(function() {
 		} else if (aliens[0].x < 0 && alienDirection == "left") {
 			alienDirection = "right";
 		}
+		// if (aliens.length < 1) {
+		// 	for (var i = 0; i <	alienNumber; i++) {
+		// 		aliens[i] = new alien(i*100, 0, i);
+		// 		$("body").append(aliens[i].buildHtml());
+		// 	}
+		// }
 		for (var i = 0; i < aliens.length; i++) {
 			if (alienDirection == "right") {
-				aliens[i].move(5,0);
+				aliens[i].move(5 + score,0);
 			} else {
-				aliens[i].move(-5,0);
+				aliens[i].move(-5 - score,0);
 			}
 			if (lasers.length > 0) {
 				if (collission(aliens[i].x, aliens[i].y, aliens[i].width, aliens[i].height,lasers[0].x, lasers[0].y, lasers[0].width, lasers[0].height)) {
-					console.log("Collission");
+					score ++;
+					updateScore();
 					aliens[i].die();
 				}
 			}
