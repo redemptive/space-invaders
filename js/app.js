@@ -6,9 +6,10 @@ $(document).ready(function() {
 	var keyMap = {68: false, 65: false, 71: false};
 	var interval;
 	var aliens = [];
+	var alienLasers = [];
 	var playerLaser = "";
 	var alienDirection = "right";
-	var alienFireCooldown = 5000;
+	var alienFireCooldown = 200;
 	var alienFireCounter = 0;
 	var score = 0;
 	var thePlayer = new player();
@@ -39,14 +40,37 @@ $(document).ready(function() {
 		this.ySpeed = ySpeed;
 		this.move = function() {
 			this.y += this.ySpeed;
-			$(".bullet#" + this.id).css("top", this.y + "px");
+			$(".bullet").css("top", this.y + "px");
 		};
 		this.buildHtml = function() {
 			return "<div id=\"" + this.id + "\" class=\"bullet\" style=\"height: " + this.height + "px; width: " + this.width + "px; top: " + this.y + "px;left: " + this.x + "px;\"></div>";
 		};
 		this.die = function() {
-			$(".bullet#" + this.id).remove();
+			$(".bullet").remove();
 			playerLaser = "";
+		}
+	}
+
+	function alienLaser(x, y, ySpeed, id) {
+		this.x = x;
+		this.y = y;
+		this.height = 25;
+		this.width = 10;
+		this.id = id;
+		this.ySpeed = ySpeed;
+		this.move = function() {
+			this.y += this.ySpeed;
+			$(".alienLaser").css("top", this.y + "px");
+			console.log($(".alienLaser").html());
+		};
+		this.buildHtml = function() {
+			var result = "<div id=\"" + this.id + "\" class=\"alienLaser\" style=\"height: " + this.height + "px; width: " + this.width + "px; top: " + this.y + "px;left: " + this.x + "px;\"></div>";
+			console.log(result);
+			return result;
+		};
+		this.die = function() {
+			$(".alienLaser").remove();
+			alienLasers.splice(alienLasers.indexOf(this));
 		}
 	}
 
@@ -65,6 +89,9 @@ $(document).ready(function() {
 			this.y += yMove;
 			$(".alien#" + this.id).css("top", this.y + "px");
 			$(".alien#" + this.id).css("left", this.x + "px");
+		};
+		this.fire = function() {
+			alienLasers.push(new alienLaser(this.x, this.y, 10, 0));
 		};
 		this.die = function() {
 			$(".alien#" + this.id).remove();
@@ -124,6 +151,15 @@ $(document).ready(function() {
 				playerLaser.die();
 			}
 		}
+		if (alienLasers.length != []) {
+			for (var i = 0; i < alienLasers.length; i++) {
+				alienLasers[i].move();
+				if (alienLasers[i].y > $(window).height()) {
+					alienLasers[i].die();
+				}
+			}
+		}
+
 	}
 
 	function spawnAliens() {
@@ -133,20 +169,11 @@ $(document).ready(function() {
 		}
 	}
 
-	function moveAliens() {
+	function manageAliens() {
 		if (aliens[aliens.length - 1].x > $(window).width() - aliens[0].width && alienDirection == "right") {
 			alienDirection = "left";
 		} else if (aliens[0].x < 0 && alienDirection == "left") {
 			alienDirection = "right";
-		}
-	}
-
-	function gameLoop() {
-		checkKeys();
-		moveAliens();
-		manageLasers();
-		if (aliens.length < 1) {
-			spawnAliens();
 		}
 		for (var i = 0; i < aliens.length; i++) {
 			if (alienDirection == "right") {
@@ -163,6 +190,23 @@ $(document).ready(function() {
 				}
 			}
 		}
+		if (alienFireCooldown < alienFireCounter) {
+			aliens[Math.floor(Math.random() * aliens.length)].fire();
+			$("body").append(alienLasers[alienLasers.length - 1].buildHtml());
+			alienFireCounter = 0;
+		} else {
+			alienFireCounter++;
+		}
+		if (aliens.length < 1) {
+			spawnAliens();
+		}
+	}
+
+	function gameLoop() {
+		manageLasers();
+		checkKeys();
+		manageAliens();
+
 	}
 
 	init();
