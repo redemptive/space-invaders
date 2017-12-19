@@ -137,15 +137,19 @@ $(document).ready(function() {
 		}
 	}
 
-	function gameLoop() {
-		checkKeys();
-		manageLasers();
-		spawnAliens();
+	function moveAliens() {
 		if (aliens[aliens.length - 1].x > $(window).width() - aliens[0].width && alienDirection == "right") {
 			alienDirection = "left";
 		} else if (aliens[0].x < 0 && alienDirection == "left") {
 			alienDirection = "right";
 		}
+	}
+
+	function gameLoop() {
+		checkKeys();
+		manageLasers();
+		spawnAliens();
+		moveAliens();
 		for (var i = 0; i < aliens.length; i++) {
 			if (alienDirection == "right") {
 				aliens[i].move(5 + score,0);
