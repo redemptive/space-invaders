@@ -12,6 +12,7 @@ $(document).ready(function() {
 	var alienFireCounter = 0;
 	var score = 0;
 	var thePlayer = new player();
+	var alienSprites = ["assets/alien.png","assets/alien2.png"];
 
 	function player() {
 		this.x = 20;
@@ -55,7 +56,7 @@ $(document).ready(function() {
 		this.id = id;
 		this.height = 100;
 		this.width = 100;
-		this.sprite = "assets/alien.png";
+		this.sprite = alienSprites[Math.floor(Math.random() * 2)];
 		this.buildHtml = function() {
 			return "<div id=\"" + this.id + "\" class=\"alien\" style=\"height:" + this.height + "px; width: " + this.width + "top: " + this.y + "px;left: " + this.x + "px;\"><img src=\"" + this.sprite + "\" class=\"alien-img\"></div>";
 		};
