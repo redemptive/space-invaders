@@ -4,9 +4,9 @@ $(document).ready(function() {
 	var alienHeight = 100;
 	//68 = right, 65 = left, 71 = g(fire)
 	var keyMap = {68: false, 65: false, 71: false};
-	var interval = setInterval(gameLoop, 20);
+	var interval;
 	var aliens = [];
-	var lasers = [];
+	var playerLaser = "";
 	var alienDirection = "right";
 	var alienFireCooldown = 5000;
 	var alienFireCounter = 0;
@@ -35,7 +35,7 @@ $(document).ready(function() {
 		this.y = y;
 		this.height = 25;
 		this.width = 10;
-		this.id = id;
+		this.id = 0;
 		this.ySpeed = ySpeed;
 		this.move = function() {
 			this.y += this.ySpeed;
@@ -46,7 +46,7 @@ $(document).ready(function() {
 		};
 		this.die = function() {
 			$(".bullet#" + this.id).remove();
-			lasers.splice(lasers.indexOf(this),1);
+			playerLaser = "";
 		}
 	}
 
@@ -76,6 +76,7 @@ $(document).ready(function() {
 		spawnAliens();
 		$("body").append(thePlayer.buildHtml());
 		$("body").append("<div id=\"score\">Score: " + score + "</div>");
+		interval = setInterval(gameLoop, 20);
 	}
 
 	$(document).keydown(function(e) {
@@ -110,28 +111,25 @@ $(document).ready(function() {
 			thePlayer.move(10,0);
 		} else if (keyMap[65] && thePlayer.x > 10) {
 			thePlayer.move(-10,0);
-		} else if (keyMap[71] && lasers.length == 0) {
-			lasers[0] = new laser(thePlayer.x, thePlayer.y, -10,0);
-			$("body").append(lasers[0].buildHtml());
+		} else if (keyMap[71] && playerLaser === "") {
+			playerLaser = new laser(thePlayer.x, thePlayer.y, -10,0);
+			$("body").append(playerLaser.buildHtml());
 		}
 	}
 
 	function manageLasers() {
-		if (lasers.length > 0) {
-			lasers[0].move(0,-10);
-			console.log(lasers[0]);
-			if (lasers[0].y < 0) {
-				lasers[0].die();
+		if (playerLaser != "") {
+			playerLaser.move(0,-10);
+			if (playerLaser.y < 0) {
+				playerLaser.die();
 			}
 		}
 	}
 
 	function spawnAliens() {
-		if (aliens.length < 1) {
-			for (var i = 0; i <	alienNumber; i++) {
-				aliens[i] = new alien(i*100, 0, i);
-				$("body").append(aliens[i].buildHtml());
-			}
+		for (var i = 0; i <	alienNumber; i++) {
+			aliens[i] = new alien(i*100, 0, i);
+			$("body").append(aliens[i].buildHtml());
 		}
 	}
 
@@ -145,20 +143,23 @@ $(document).ready(function() {
 
 	function gameLoop() {
 		checkKeys();
-		manageLasers();
-		spawnAliens();
 		moveAliens();
+		manageLasers();
+		if (aliens.length < 1) {
+			spawnAliens();
+		}
 		for (var i = 0; i < aliens.length; i++) {
 			if (alienDirection == "right") {
 				aliens[i].move(5 + score,0);
 			} else {
 				aliens[i].move(-5 - score,0);
 			}
-			if (lasers.length > 0) {
-				if (collission(aliens[i].x, aliens[i].y, aliens[i].width, aliens[i].height,lasers[0].x, lasers[0].y, lasers[0].width, lasers[0].height)) {
+			if (playerLaser != "") {
+				if (collission(aliens[i].x, aliens[i].y, aliens[i].width, aliens[i].height,playerLaser.x, playerLaser.y, playerLaser.width, playerLaser.height)) {
 					score ++;
 					updateScore();
 					aliens[i].die();
+					playerLaser.die();
 				}
 			}
 		}
