@@ -118,9 +118,7 @@ $(document).ready(function() {
 		}
 	}
 
-	function gameLoop() {
-		checkKeys();
-		console.log(lasers[0]);
+	function manageLasers() {
 		if (lasers.length > 0) {
 			lasers[0].move(0,-10);
 			console.log(lasers[0]);
@@ -128,6 +126,11 @@ $(document).ready(function() {
 				lasers[0].die();
 			}
 		}
+	}
+
+	function gameLoop() {
+		checkKeys();
+		manageLasers();
 		if (aliens.length < 1) {
 			for (var i = 0; i <	alienNumber; i++) {
 				aliens[i] = new alien(i*100, 0, i);
