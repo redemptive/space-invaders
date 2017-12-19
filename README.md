@@ -12,4 +12,4 @@ A simple browser based space invaders game
 - JQuery
 
 ## Installation and usage
-Simply clone the repository and open index.html to play
+Simply clone the repository and open start.html to play
