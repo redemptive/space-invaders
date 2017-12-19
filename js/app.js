@@ -78,7 +78,6 @@ $(document).ready(function() {
 		}
 		$("body").append(thePlayer.buildHtml());
 		$("body").append("<div id=\"score\">Score: " + score + "</div>");
-		console.log(thePlayer);
 	}
 
 	$(document).keydown(function(e) {
@@ -114,11 +113,12 @@ $(document).ready(function() {
 		} else if (keyMap[65] && thePlayer.x > 10) {
 			thePlayer.move(-10,0);
 		} else if (keyMap[71] && lasers.length == 0) {
-			lasers.push(new laser(thePlayer.x, thePlayer.y, -10,lasers.length));
+			lasers.push(new laser(thePlayer.x, thePlayer.y, -10,0));
 			$("body").append(lasers[0].buildHtml());
 		}
+		console.log(lasers[0]);
 		if (lasers.length > 0) {
-			lasers[0].move();
+			lasers[0].move(0,-10);
 			console.log(lasers[0]);
 			if (lasers[0].y < 0) {
 				lasers[0].die();
