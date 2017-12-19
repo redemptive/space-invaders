@@ -72,10 +72,7 @@ $(document).ready(function() {
 	}
 
 	function init() {
-		for (var i = 0; i <	alienNumber; i++) {
-			aliens[i] = new alien(i*100, 0, i);
-			$("body").append(aliens[i].buildHtml());
-		}
+		spawnAliens();
 		$("body").append(thePlayer.buildHtml());
 		$("body").append("<div id=\"score\">Score: " + score + "</div>");
 	}
@@ -113,7 +110,7 @@ $(document).ready(function() {
 		} else if (keyMap[65] && thePlayer.x > 10) {
 			thePlayer.move(-10,0);
 		} else if (keyMap[71] && lasers.length == 0) {
-			lasers.push(new laser(thePlayer.x, thePlayer.y, -10,0));
+			lasers[0] = new laser(thePlayer.x, thePlayer.y, -10,0);
 			$("body").append(lasers[0].buildHtml());
 		}
 	}
