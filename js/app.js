@@ -8,6 +8,8 @@ $(document).ready(function() {
 	var aliens = [];
 	var lasers = [];
 	var alienDirection = "right";
+	var alienFireCooldown = 5000;
+	var alienFireCounter = 0;
 
 	function laser(x, y, ySpeed, id) {
 		this.x = x;
@@ -25,7 +27,7 @@ $(document).ready(function() {
 		};
 		this.die = function() {
 			$(".bullet#" + this.id).remove();
-			lasers.splice(aliens.indexOf(this),1);
+			lasers.splice(lasers.indexOf(this),1);
 		}
 	}
 
@@ -89,11 +91,13 @@ $(document).ready(function() {
 		} else if (keyMap[65] && player.position().left > 10) {
 			player.css("left", player.position().left - 10);
 		} else if (keyMap[71] && lasers.length == 0) {
-			lasers.push(new laser(player.position().left, player.position().top, -10,0));
+			lasers.push(new laser(player.position().left, player.position().top, -10,lasers.length - 1));
+			console.log(lasers.length);
 			$("body").append(lasers[0].buildHtml());
 		}
 		if (lasers.length > 0) {
 			lasers[0].move();
+			console.log(lasers[0]);
 			if (lasers[0].y < 0) {
 				lasers[0].die();
 			}
@@ -105,9 +109,9 @@ $(document).ready(function() {
 		}
 		for (var i = 0; i < aliens.length; i++) {
 			if (alienDirection == "right") {
-				aliens[i].move(10,0);
+				aliens[i].move(5,0);
 			} else {
-				aliens[i].move(-10,0);
+				aliens[i].move(-5,0);
 			}
 			if (lasers.length > 0) {
 				if (collission(aliens[i].x, aliens[i].y, aliens[i].width, aliens[i].height,lasers[0].x, lasers[0].y, lasers[0].width, lasers[0].height)) {
