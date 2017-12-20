@@ -7,3 +7,7 @@ body {
 a {
 	color: #00FF00;
 }
+
+body {
+	background-image: url("../assets/background.png"); 
+}
