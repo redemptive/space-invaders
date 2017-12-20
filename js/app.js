@@ -89,33 +89,39 @@ $(document).ready(function() {
 		alienLasers.splice(alienLasers.indexOf(this));
 	}
 
-	function alien(x, y, id) {
+	//Alien object
+	function Alien(x, y, id, height, width) {
 		this.x = x;
 		this.y = y;
 		this.id = id;
-		this.height = 100;
-		this.width = 100;
+		this.height = height;
+		this.width = width;
 		this.sprite = alienSprites[animateIndex];
-		this.buildHtml = function() {
-			return "<div id=\"" + this.id + "\" class=\"alien\" style=\"height:" + this.height + "px; width: " + this.width + "top: " + this.y + "px;left: " + this.x + "px;\"><img src=\"" + this.sprite + "\" class=\"alien-img\"></div>";
-		};
-		this.changeImage = function(index) {
-			this.sprite = alienSprites[index];
-			$(".alien#" + this.id + " img").attr("src",alienSprites[index]);
-		};
-		this.move = function(xMove, yMove) {
-			this.x += xMove;
-			this.y += yMove;
-			$(".alien#" + this.id).css("top", this.y + "px");
-			$(".alien#" + this.id).css("left", this.x + "px");
-		};
-		this.fire = function() {
-			alienLasers.push(new AlienLaser(this.x, this.y, 6 + score, 25, 10, 0));
-		};
-		this.die = function() {
-			$(".alien#" + this.id).remove();
-			aliens.splice(aliens.indexOf(this),1);
-		}
+	}
+
+	Alien.prototype.buildHtml = function() {
+		return "<div id=\"" + this.id + "\" class=\"alien\" style=\"height:" + this.height + "px; width: " + this.width + "top: " + this.y + "px;left: " + this.x + "px;\"><img src=\"" + this.sprite + "\" class=\"alien-img\"></div>";
+	}
+
+	Alien.prototype.changeImage = function(index) {
+		this.sprite = alienSprites[index];
+		$(".alien#" + this.id + " img").attr("src",alienSprites[index]);
+	}
+
+	Alien.prototype.move = function(xMove, yMove) {
+		this.x += xMove;
+		this.y += yMove;
+		$(".alien#" + this.id).css("top", this.y + "px");
+		$(".alien#" + this.id).css("left", this.x + "px");
+	}
+
+	Alien.prototype.fire = function() {
+		alienLasers.push(new AlienLaser(this.x, this.y, 6 + score, 25, 10, 0));
+	}
+
+	Alien.prototype.die = function() {
+		$(".alien#" + this.id).remove();
+		aliens.splice(aliens.indexOf(this),1);
 	}
 
 	function init() {
@@ -185,7 +191,7 @@ $(document).ready(function() {
 
 	function spawnAliens() {
 		for (var i = 0; i <	alienNumber; i++) {
-			aliens[i] = new alien(i*100, 0, i);
+			aliens[i] = new Alien(i*100, 0, i, 100, 100);
 			$("body").append(aliens[i].buildHtml());
 		}
 	}
