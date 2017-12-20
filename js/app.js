@@ -199,9 +199,9 @@ $(document).ready(function() {
 				aliens[i].changeImage(animateIndex);
 			}
 			if (alienDirection == "right") {
-				aliens[i].move(5 + (score/2),0);
+				aliens[i].move(5 + (score/2),score / 40);
 			} else {
-				aliens[i].move(-5 - (score/2),0);
+				aliens[i].move(-5 - (score/2),score / 40);
 			}
 			if (playerLaser != "") {
 				if (collission(aliens[i].x, aliens[i].y, aliens[i].width, aliens[i].height,playerLaser.x, playerLaser.y, playerLaser.width, playerLaser.height)) {
@@ -218,7 +218,7 @@ $(document).ready(function() {
 			alienFireCounter = 0;
 		} else {
 			alienFireCounter++;
-			alienFireCooldown = 200 - (score * 5);
+			alienFireCooldown = 200 - (score * 4);
 		}
 		if (aliens.length < 1) {
 			spawnAliens();
@@ -238,6 +238,9 @@ $(document).ready(function() {
 						endGame = true;
 					}
 				}
+			}
+			if (aliens[0].y > $(window).height() - thePlayer.height - aliens[0].height) {
+				endGame = true;
 			}
 		} else {
 			clearInterval(interval);
