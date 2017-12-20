@@ -1,31 +1,30 @@
 $(document).ready(function() {
 
-	//68 = right, 65 = left, 71 = g(fire)
-	var keyMap = {68: false, 65: false, 71: false};
 	var interval;
 	var alienLasers = [];
-	var playerLaser = "";
-	var alienDirection = "right";
-	var alienFireCooldown = 200;
-	var alienFireCounter = 0;
-	var score = 0;
-	var alienSprites = ["assets/alien.png","assets/alien2.png"];
-	var endGame = false;
-	var animateCounter = 0;
-	var animateIndex = 0;
-	var animateSpeed = 25;
-	var game = new Game(new Player(20, $(window).height() - 60, 40, 40, 3), [], 6);
+	var game = new Game(new Player(20, $(window).height() - 60, 40, 40, 3), "", [], ["assets/alien.png","assets/alien2.png"], 6, "right", 0, 200, 0, 0, 25, false, {68: false, 65: false, 71: false}, 0);
 
 	//Game constructor
-	function Game(player, aliens, alienNumber) {
+	function Game(player, playerLaser, aliens, alienSprites, alienNumber, alienDirection, alienFireCounter, alienFireCooldown, animateCounter, animateIndex, animateSpeed, endGame, keyMap, score) {
 		this.player = player;
+		this.playerLaser = playerLaser;
 		this.aliens = aliens;
+		this.alienSprites = alienSprites;
 		this.alienNumber = alienNumber;
+		this.alienDirection = alienDirection;
+		this.alienFireCounter = alienFireCounter;
+		this.alienFireCooldown = alienFireCooldown;
+		this.animateCounter = animateCounter;
+		this.animateIndex = animateIndex;
+		this.animateSpeed = animateSpeed;
+		this.endGame = endGame;
+		this.keyMap = keyMap;
+		this.score = score;
 	}
 
 	Game.prototype.updateHud = function() {
-		$("#score").text("Score: " + score);
-		$("#lives").text("Lives: " + game.player.lives);
+		$("#score").text("Score: " + this.score);
+		$("#lives").text("Lives: " + this.player.lives);
 	}
 
 	Game.prototype.spawnAliens = function() {
@@ -36,13 +35,13 @@ $(document).ready(function() {
 	}
 
 	Game.prototype.checkKeys = function() {
-		if (keyMap[68] && game.player.x < $(window).width() - 10 - game.player.width) {
-			game.player.move(10,0);
-		} else if (keyMap[65] && game.player.x > 10) {
-			game.player.move(-10,0);
-		} else if (keyMap[71] && playerLaser === "") {
-			playerLaser = new Laser(game.player.x, game.player.y, -10, 25, 10, 0);
-			$("body").append(playerLaser.buildHtml());
+		if (this.keyMap[68] && this.player.x < $(window).width() - 10 - this.player.width) {
+			this.player.move(10,0);
+		} else if (this.keyMap[65] && this.player.x > 10) {
+			this.player.move(-10,0);
+		} else if (this.keyMap[71] && this.playerLaser === "") {
+			this.playerLaser = new Laser(this.player.x, this.player.y, -10, 25, 10, 0);
+			$("body").append(this.playerLaser.buildHtml());
 		}
 	}
 
@@ -60,10 +59,10 @@ $(document).ready(function() {
 	}
 
 	Game.prototype.manageLasers = function() {
-		if (playerLaser != "") {
-			playerLaser.move(0,-10);
-			if (playerLaser.y < 0) {
-				playerLaser.die();
+		if (this.playerLaser != "") {
+			this.playerLaser.move(0,-10);
+			if (this.playerLaser.y < 0) {
+				this.playerLaser.die();
 			}
 		}
 		if (alienLasers.length != []) {
@@ -77,54 +76,54 @@ $(document).ready(function() {
 	}
 
 	Game.prototype.manageAliens = function() {
-		if (game.aliens[game.aliens.length - 1].x > $(window).width() - game.aliens[0].width && alienDirection == "right") {
-			alienDirection = "left";
-		} else if (game.aliens[0].x < 0 && alienDirection == "left") {
-			alienDirection = "right";
+		if (this.aliens[this.aliens.length - 1].x > $(window).width() - this.aliens[0].width && this.alienDirection == "right") {
+			this.alienDirection = "left";
+		} else if (this.aliens[0].x < 0 && this.alienDirection == "left") {
+			this.alienDirection = "right";
 		}
-		if (animateCounter > animateSpeed) {
-			animateCounter = 0;
-			if (animateIndex < alienSprites.length) {
-				animateIndex ++;
+		if (this.animateCounter > this.animateSpeed) {
+			this.animateCounter = 0;
+			if (this.animateIndex < this.alienSprites.length) {
+				this.animateIndex ++;
 			} else {
-				animateIndex = 0;
+				this.animateIndex = 0;
 			}
 		} else {
-			animateCounter ++;
+			this.animateCounter ++;
 		}
-		for (var i = 0; i < game.aliens.length; i++) {
-			if (alienSprites[animateIndex] != game.aliens[i].sprite) {
-				game.aliens[i].changeImage(animateIndex);
+		for (var i = 0; i < this.aliens.length; i++) {
+			if (this.alienSprites[this.animateIndex] != this.aliens[i].sprite) {
+				this.aliens[i].changeImage(this.animateIndex);
 			}
-			if (alienDirection == "right") {
-				game.aliens[i].move(5 + (score/2),score / 40);
+			if (this.alienDirection == "right") {
+				this.aliens[i].move(5 + (this.score/2),this.score / 40);
 			} else {
-				game.aliens[i].move(-5 - (score/2),score / 40);
+				this.aliens[i].move(-5 - (this.score/2),this.score / 40);
 			}
-			if (playerLaser != "") {
-				if (game.collission(game.aliens[i].x, game.aliens[i].y, game.aliens[i].width, game.aliens[i].height,playerLaser.x, playerLaser.y, playerLaser.width, playerLaser.height)) {
-					score ++;
-					game.updateHud();
-					game.aliens[i].die();
-					playerLaser.die();
+			if (this.playerLaser != "") {
+				if (this.collission(this.aliens[i].x, this.aliens[i].y, this.aliens[i].width, this.aliens[i].height,this.playerLaser.x, this.playerLaser.y, this.playerLaser.width, this.playerLaser.height)) {
+					this.score ++;
+					this.updateHud();
+					this.aliens[i].die();
+					this.playerLaser.die();
 				}
 			}
 		}
-		if (alienFireCooldown < alienFireCounter) {
-			game.aliens[Math.floor(Math.random() * game.aliens.length)].fire();
+		if (this.alienFireCooldown < this.alienFireCounter) {
+			this.aliens[Math.floor(Math.random() * this.aliens.length)].fire();
 			$("body").append(alienLasers[alienLasers.length - 1].buildHtml());
-			alienFireCounter = 0;
+			this.alienFireCounter = 0;
 		} else {
-			alienFireCounter++;
-			alienFireCooldown = 200 - (score * 4);
+			this.alienFireCounter++;
+			this.alienFireCooldown = 200 - (this.score * 4);
 		}
-		if (game.aliens.length < 1) {
-			game.spawnAliens();
+		if (this.aliens.length < 1) {
+			this.spawnAliens();
 		}
 	}
 
 	Game.prototype.gameLoop = function() {
-		if (!endGame) {
+		if (!this.endGame) {
 			game.manageLasers();
 			game.checkKeys();
 			game.manageAliens();
@@ -139,12 +138,12 @@ $(document).ready(function() {
 				}
 			}
 			if (game.aliens[0].y > $(window).height() - game.player.height - game.aliens[0].height) {
-				endGame = true;
+				this.endGame = true;
 			}
 		} else {
 			clearInterval(interval);
 			$("body").empty();
-			$("body").append("<div class=\"endGame\"><h2>You died! Score: " + score + "</h2></div>")
+			$("body").append("<div class=\"endGame\"><h2>You died! Score: " + this.score + "</h2></div>")
 		}
 	}
 
@@ -189,7 +188,7 @@ $(document).ready(function() {
 
 	Laser.prototype.die = function() {
 		$(".bullet").remove();
-		playerLaser = "";
+		game.playerLaser = "";
 	}
 
 	//AlienLaser constructor
@@ -225,7 +224,7 @@ $(document).ready(function() {
 		this.id = id;
 		this.height = height;
 		this.width = width;
-		this.sprite = alienSprites[animateIndex];
+		this.sprite = game.alienSprites[game.animateIndex];
 	}
 
 	Alien.prototype.buildHtml = function() {
@@ -233,8 +232,8 @@ $(document).ready(function() {
 	}
 
 	Alien.prototype.changeImage = function(index) {
-		this.sprite = alienSprites[index];
-		$(".alien#" + this.id + " img").attr("src",alienSprites[index]);
+		this.sprite = game.alienSprites[index];
+		$(".alien#" + this.id + " img").attr("src",game.alienSprites[index]);
 	}
 
 	Alien.prototype.move = function(xMove, yMove) {
@@ -245,7 +244,7 @@ $(document).ready(function() {
 	}
 
 	Alien.prototype.fire = function() {
-		alienLasers.push(new AlienLaser(this.x, this.y, 6 + score, 25, 10, 0));
+		alienLasers.push(new AlienLaser(this.x, this.y, 6 + game.score, 25, 10, 0));
 	}
 
 	Alien.prototype.die = function() {
@@ -256,18 +255,18 @@ $(document).ready(function() {
 	function init() {
 		game.spawnAliens();
 		$("body").append(game.player.buildHtml());
-		$("body").append("<div id=\"score\">Score: " + score + "</div>");
+		$("body").append("<div id=\"score\">Score: " + game.score + "</div>");
 		$("body").append("<div id=\"lives\">Lives: " + game.player.lives + "</div>");
 		interval = setInterval(game.gameLoop, 20);
 	}
 
 	$(document).keydown(function(e) {
-		if (e.keyCode in keyMap) {
-			keyMap[e.keyCode] = true;
+		if (e.keyCode in game.keyMap) {
+			game.keyMap[e.keyCode] = true;
 		}
 	}).keyup(function(e) {
-		if (e.keyCode in keyMap) {
-			keyMap[e.keyCode] = false;
+		if (e.keyCode in game.keyMap) {
+			game.keyMap[e.keyCode] = false;
 		}
 	});
 	init();
