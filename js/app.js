@@ -12,71 +12,81 @@ $(document).ready(function() {
 	var alienFireCooldown = 200;
 	var alienFireCounter = 0;
 	var score = 0;
-	var thePlayer = new player();
+	var thePlayer = new Player(20, $(window).height() - 60, 40, 40, 3);
 	var alienSprites = ["assets/alien.png","assets/alien2.png"];
 	var endGame = false;
 	var animateCounter = 0;
 	var animateIndex = 0;
 	var animateSpeed = 25;
 
-	function player() {
-		this.x = 20;
-		this.y = $(window).height() - 60;
-		this.height = 40;
-		this.width = 40;
-		this.lives = 3;
-		this.move = function(xMove, yMove) {
-			this.x += xMove;
-			this.y += yMove;
-			$("#player").css("top", this.y + "px");
-			$("#player").css("left", this.x + "px");
-		}
-		this.buildHtml = function() {
-			return "<div id=\"player\"><img src=\"assets/player.png\" width=\"" + this.width + "\" height=\"" + this.height + "\"></div>";
-		}
-	}
-
-	function laser(x, y, ySpeed, id) {
+	//Player object
+	function Player(x, y, height, width, lives) {
 		this.x = x;
 		this.y = y;
-		this.height = 25;
-		this.width = 10;
-		this.id = 0;
-		this.ySpeed = ySpeed;
-		this.move = function() {
-			this.y += this.ySpeed;
-			$(".bullet").css("top", this.y + "px");
-		};
-		this.buildHtml = function() {
-			return "<div id=\"" + this.id + "\" class=\"bullet\" style=\"height: " + this.height + "px; width: " + this.width + "px; top: " + this.y + "px;left: " + this.x + "px;\"></div>";
-		};
-		this.die = function() {
-			$(".bullet").remove();
-			playerLaser = "";
-		}
+		this.height = height;
+		this.width = width;
+		this.lives = lives;
 	}
 
-	function alienLaser(x, y, ySpeed, id) {
+	Player.prototype.move = function(xMove, yMove) {
+		this.x += xMove;
+		this.y += yMove;
+		$("#player").css("top", this.y + "px");
+		$("#player").css("left", this.x + "px");
+	}
+
+	Player.prototype.buildHtml = function() {
+		return "<div id=\"player\"><img src=\"assets/player.png\" width=\"" + this.width + "\" height=\"" + this.height + "\"></div>";
+	}
+
+	//Laser object
+	function Laser(x, y, ySpeed, height, width, id) {
 		this.x = x;
 		this.y = y;
-		this.height = 25;
-		this.width = 10;
+		this.height = height;
+		this.width = width;
 		this.id = id;
 		this.ySpeed = ySpeed;
-		this.move = function() {
-			this.y += this.ySpeed;
-			$(".alienLaser").css("top", this.y + "px");
-			console.log($(".alienLaser").html());
-		};
-		this.buildHtml = function() {
-			var result = "<div id=\"" + this.id + "\" class=\"alienLaser\" style=\"height: " + this.height + "px; width: " + this.width + "px; top: " + this.y + "px;left: " + this.x + "px;\"></div>";
-			console.log(result);
-			return result;
-		};
-		this.die = function() {
-			$(".alienLaser").remove();
-			alienLasers.splice(alienLasers.indexOf(this));
-		}
+	}
+
+	Laser.prototype.move = function() {
+		this.y += this.ySpeed;
+		$(".bullet").css("top", this.y + "px");
+	}
+
+	Laser.prototype.buildHtml = function() {
+		return "<div id=\"" + this.id + "\" class=\"bullet\" style=\"height: " + this.height + "px; width: " + this.width + "px; top: " + this.y + "px;left: " + this.x + "px;\"></div>";
+	}
+
+	Laser.prototype.die = function() {
+		$(".bullet").remove();
+		playerLaser = "";
+	}
+
+	//AlienLaser Object
+	function AlienLaser(x, y, ySpeed, height, width, id) {
+		this.x = x;
+		this.y = y;
+		this.height = height;
+		this.width = width;
+		this.id = id;
+		this.ySpeed = ySpeed;
+	}
+
+	AlienLaser.prototype.move = function() {
+		this.y += this.ySpeed;
+		$(".alienLaser").css("top", this.y + "px");
+	}
+
+	AlienLaser.prototype.buildHtml = function() {
+		var result = "<div id=\"" + this.id + "\" class=\"alienLaser\" style=\"height: " + this.height + "px; width: " + this.width + "px; top: " + this.y + "px;left: " + this.x + "px;\"></div>";
+		console.log(result);
+		return result;
+	}
+
+	AlienLaser.prototype.die = function() {
+		$(".alienLaser").remove();
+		alienLasers.splice(alienLasers.indexOf(this));
 	}
 
 	function alien(x, y, id) {
@@ -100,7 +110,7 @@ $(document).ready(function() {
 			$(".alien#" + this.id).css("left", this.x + "px");
 		};
 		this.fire = function() {
-			alienLasers.push(new alienLaser(this.x, this.y, 6 + score, 0));
+			alienLasers.push(new AlienLaser(this.x, this.y, 6 + score, 25, 10, 0));
 		};
 		this.die = function() {
 			$(".alien#" + this.id).remove();
@@ -150,7 +160,7 @@ $(document).ready(function() {
 		} else if (keyMap[65] && thePlayer.x > 10) {
 			thePlayer.move(-10,0);
 		} else if (keyMap[71] && playerLaser === "") {
-			playerLaser = new laser(thePlayer.x, thePlayer.y, -10,0);
+			playerLaser = new Laser(thePlayer.x, thePlayer.y, -10, 25, 10, 0);
 			$("body").append(playerLaser.buildHtml());
 		}
 	}
