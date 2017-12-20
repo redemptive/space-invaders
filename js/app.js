@@ -15,6 +15,9 @@ $(document).ready(function() {
 	var thePlayer = new player();
 	var alienSprites = ["assets/alien.png","assets/alien2.png"];
 	var endGame = false;
+	var animateCounter = 0;
+	var animateIndex = 0;
+	var animateSpeed = 25;
 
 	function player() {
 		this.x = 20;
@@ -82,9 +85,13 @@ $(document).ready(function() {
 		this.id = id;
 		this.height = 100;
 		this.width = 100;
-		this.sprite = alienSprites[Math.floor(Math.random() * 2)];
+		this.sprite = alienSprites[animateIndex];
 		this.buildHtml = function() {
 			return "<div id=\"" + this.id + "\" class=\"alien\" style=\"height:" + this.height + "px; width: " + this.width + "top: " + this.y + "px;left: " + this.x + "px;\"><img src=\"" + this.sprite + "\" class=\"alien-img\"></div>";
+		};
+		this.changeImage = function(index) {
+			this.sprite = alienSprites[index];
+			$(".alien#" + this.id + " img").attr("src",alienSprites[index]);
 		};
 		this.move = function(xMove, yMove) {
 			this.x += xMove;
@@ -177,11 +184,24 @@ $(document).ready(function() {
 		} else if (aliens[0].x < 0 && alienDirection == "left") {
 			alienDirection = "right";
 		}
-		for (var i = 0; i < aliens.length; i++) {
-			if (alienDirection == "right") {
-				aliens[i].move(5 + score,0);
+		if (animateCounter > animateSpeed) {
+			animateCounter = 0;
+			if (animateIndex < alienSprites.length) {
+				animateIndex ++;
 			} else {
-				aliens[i].move(-5 - score,0);
+				animateIndex = 0;
+			}
+		} else {
+			animateCounter ++;
+		}
+		for (var i = 0; i < aliens.length; i++) {
+			if (alienSprites[animateIndex] != aliens[i].sprite) {
+				aliens[i].changeImage(animateIndex);
+			}
+			if (alienDirection == "right") {
+				aliens[i].move(5 + (score/2),0);
+			} else {
+				aliens[i].move(-5 - (score/2),0);
 			}
 			if (playerLaser != "") {
 				if (collission(aliens[i].x, aliens[i].y, aliens[i].width, aliens[i].height,playerLaser.x, playerLaser.y, playerLaser.width, playerLaser.height)) {
