@@ -112,6 +112,7 @@ $(document).ready(function() {
 		spawnAliens();
 		$("body").append(thePlayer.buildHtml());
 		$("body").append("<div id=\"score\">Score: " + score + "</div>");
+		$("body").append("<div id=\"lives\">Lives: " + thePlayer.lives + "</div>");
 		interval = setInterval(gameLoop, 20);
 	}
 
@@ -138,8 +139,9 @@ $(document).ready(function() {
 		}
 	}
 
-	function updateScore() {
+	function updateHud() {
 		$("#score").text("Score: " + score);
+		$("#lives").text("Lives: " + thePlayer.lives);
 	}
 
 	function checkKeys() {
@@ -206,7 +208,7 @@ $(document).ready(function() {
 			if (playerLaser != "") {
 				if (collission(aliens[i].x, aliens[i].y, aliens[i].width, aliens[i].height,playerLaser.x, playerLaser.y, playerLaser.width, playerLaser.height)) {
 					score ++;
-					updateScore();
+					updateHud();
 					aliens[i].die();
 					playerLaser.die();
 				}
@@ -234,6 +236,7 @@ $(document).ready(function() {
 				if (collission(thePlayer.x, thePlayer.y, thePlayer.width, thePlayer.height, alienLasers[0].x, alienLasers[0].y, alienLasers[0].width, alienLasers[0].height)) {
 					alienLasers[0].die();
 					thePlayer.lives --;
+					updateHud();
 					if (thePlayer.lives < 1) {
 						endGame = true;
 					}
