@@ -1,6 +1,5 @@
 $(document).ready(function() {
 
-	var interval;
 	var game;
 
 	//Game constructor
@@ -20,6 +19,16 @@ $(document).ready(function() {
 		this.endGame = endGame;
 		this.keyMap = keyMap;
 		this.score = score;
+		//function calls
+		this.spawnAliens();
+		this.initScreen();
+		this.interval = setInterval(this.gameLoop, 20);
+	}
+
+	Game.prototype.initScreen = function() {
+		$("body").append(this.player.buildHtml());
+		$("body").append("<div id=\"score\">Score: " + this.score + "</div>");
+		$("body").append("<div id=\"lives\">Lives: " + this.player.lives + "</div>");
 	}
 
 	Game.prototype.updateHud = function() {
@@ -91,19 +100,20 @@ $(document).ready(function() {
 			this.animateCounter ++;
 		}
 		for (var i = 0; i < this.aliens.length; i++) {
-			if (this.alienSprites[this.animateIndex] != this.aliens[i].sprite) {
+			if (this.alienSprites[this.animateIndex] !== this.aliens[i].sprite) {
 				this.aliens[i].changeImage(this.alienSprites[this.animateIndex]);
 			}
-			if (this.alienDirection == "right") {
+			if (this.alienDirection === "right") {
 				this.aliens[i].move(5 + (this.score/2),this.score / 40);
 			} else {
 				this.aliens[i].move(-5 - (this.score/2),this.score / 40);
 			}
-			if (this.playerLaser != "") {
+			if (this.playerLaser !== "") {
 				if (this.collission(this.aliens[i].x, this.aliens[i].y, this.aliens[i].width, this.aliens[i].height,this.playerLaser.x, this.playerLaser.y, this.playerLaser.width, this.playerLaser.height)) {
 					this.score ++;
 					this.updateHud();
 					this.aliens[i].die();
+					this.aliens.splice(this.aliens.indexOf(this.aliens[i]),1);
 					this.playerLaser.die();
 					this.playerLaser = "";
 				}
@@ -131,10 +141,12 @@ $(document).ready(function() {
 			if (this.alienLaser != 0) {
 				if (game.collission(game.player.x, game.player.y, game.player.width, game.player.height, game.alienLaser.x, game.alienLaser.y, game.alienLaser.width, game.alienLaser.height)) {
 					game.alienLaser.die();
+					game.alienLaser = "";
 					game.player.lives --;
 					game.updateHud();
+					game.player.changeSprite();
 					if (game.player.lives < 1) {
-						endGame = true;
+						this.endGame = true;
 					}
 				}
 			}
@@ -142,19 +154,20 @@ $(document).ready(function() {
 				this.endGame = true;
 			}
 		} else {
-			clearInterval(interval);
+			clearInterval(this.interval);
 			$("body").empty();
-			$("body").append("<div class=\"endGame\"><h2>You died! Score: " + this.score + "</h2></div>");
+			$("body").append("<div class=\"endGame\"><h2>You died! Score: " + game.score + "</h2></div>");
 		}
 	}
 
 	//Player constructor
-	function Player(x, y, height, width, lives) {
+	function Player(x, y, height, width, lives, sprites) {
 		this.x = x;
 		this.y = y;
 		this.height = height;
 		this.width = width;
 		this.lives = lives;
+		this.sprites = sprites;
 	}
 
 	Player.prototype.move = function(xMove, yMove) {
@@ -165,7 +178,11 @@ $(document).ready(function() {
 	}
 
 	Player.prototype.buildHtml = function() {
-		return "<div id=\"player\"><img src=\"assets/player.png\" width=\"" + this.width + "\" height=\"" + this.height + "\"></div>";
+		return "<div id=\"player\"><img id=\"playerImg\" src=\"" + this.sprites[this.lives - 1] + "\" width=\"" + this.width + "\" height=\"" + this.height + "\"></div>";
+	}
+
+	Player.prototype.changeSprite = function() {
+		$("#playerImg").attr("src", this.sprites[this.lives - 1])
 	}
 
 	//Laser constructor
@@ -220,16 +237,10 @@ $(document).ready(function() {
 
 	Alien.prototype.die = function() {
 		$(".alien#" + this.id).remove();
-		game.aliens.splice(game.aliens.indexOf(this),1);
 	}
 
 	function init() {
-		game = new Game(new Player(20, $(window).height() - 60, 40, 40, 3), "", [], "", ["assets/alien.png","assets/alien2.png"], 6, "right", 0, 200, 0, 0, 25, false, {68: false, 65: false, 71: false}, 0);
-		game.spawnAliens();
-		$("body").append(game.player.buildHtml());
-		$("body").append("<div id=\"score\">Score: " + game.score + "</div>");
-		$("body").append("<div id=\"lives\">Lives: " + game.player.lives + "</div>");
-		interval = setInterval(game.gameLoop, 20);
+		game = new Game(new Player(20, $(window).height() - 60, 40, 40, 3,["assets/player2.png","assets/player1.png","assets/player.png"]), "", [], "", ["assets/alien.png","assets/alien2.png"], 6, "right", 0, 200, 0, 0, 25, false, {68: false, 65: false, 71: false}, 0);
 	}
 
 	$(document).keydown(function(e) {
