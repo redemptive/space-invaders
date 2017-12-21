@@ -35,6 +35,7 @@
 
 body {
 	background-image: url("../assets/background.png"); 
+	animation: backgroundScroll 10s linear infinite;
 }
 
 .alien {
@@ -49,4 +50,9 @@ body {
 #lives {
 	color: #FFFFFF;
 	font-family: "Courier New";
+}
+
+@keyframes backgroundScroll {
+    from {background-position: 0 0;}
+    to {background-position: 0px -800px;}
 }
