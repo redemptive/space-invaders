@@ -108,7 +108,8 @@ $(document).ready(function() {
 			}
 		}
 		if (this.alienFireCooldown < this.alienFireCounter) {
-			this.aliens[Math.floor(Math.random() * this.aliens.length)].fire();
+			var randomAlien = Math.floor(Math.random() * this.aliens.length);
+			this.alienLaser = new AlienLaser(this.aliens[randomAlien].x, this.aliens[randomAlien].y, 6 + this.score, 25, 10, 0);
 			$("body").append(this.alienLaser.buildHtml());
 			this.alienFireCounter = 0;
 		} else {
@@ -125,7 +126,7 @@ $(document).ready(function() {
 			game.manageLasers();
 			game.checkKeys();
 			game.manageAliens();
-			if (game.alienLaser != 0) {
+			if (this.alienLaser != 0) {
 				if (game.collission(game.player.x, game.player.y, game.player.width, game.player.height, game.alienLaser.x, game.alienLaser.y, game.alienLaser.width, game.alienLaser.height)) {
 					game.alienLaser.die();
 					game.player.lives --;
@@ -141,7 +142,7 @@ $(document).ready(function() {
 		} else {
 			clearInterval(interval);
 			$("body").empty();
-			$("body").append("<div class=\"endGame\"><h2>You died! Score: " + this.score + "</h2></div>")
+			$("body").append("<div class=\"endGame\"><h2>You died! Score: " + this.score + "</h2></div>");
 		}
 	}
 
@@ -239,10 +240,6 @@ $(document).ready(function() {
 		this.y += yMove;
 		$(".alien#" + this.id).css("top", this.y + "px");
 		$(".alien#" + this.id).css("left", this.x + "px");
-	}
-
-	Alien.prototype.fire = function() {
-		game.alienLaser = new AlienLaser(this.x, this.y, 6 + game.score, 25, 10, 0);
 	}
 
 	Alien.prototype.die = function() {
