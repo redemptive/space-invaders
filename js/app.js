@@ -85,6 +85,7 @@ $(document).ready(function() {
 			this.alienLaser.move();
 			if (this.alienLaser.y > $(window).height()) {
 				this.alienLaser.die();
+				this.alienLaser = "";
 			}
 		}
 	}
@@ -153,7 +154,7 @@ $(document).ready(function() {
 			game.manageLasers();
 			game.checkKeys();
 			game.manageAliens();
-			if (this.alienLaser != 0) {
+			if (this.alienLaser != "") {
 				if (game.collission(game.player.x, game.player.y, game.player.width, game.player.height, game.alienLaser.x, game.alienLaser.y, game.alienLaser.width, game.alienLaser.height)) {
 					game.alienLaser.die();
 					game.alienLaser = "";
