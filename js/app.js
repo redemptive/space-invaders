@@ -27,17 +27,20 @@ $(document).ready(function() {
 	}
 
 	Game.prototype.initScreen = function() {
+		//Draw player, score and lives to the screen
 		$("body").append(this.player.buildHtml());
 		$("body").append("<div id=\"score\">Score: " + this.score + "</div>");
 		$("body").append("<div id=\"lives\">Lives: " + this.player.lives + "</div>");
 	}
 
 	Game.prototype.updateHud = function() {
+		//Update score and lives when they change
 		$("#score").text("Score: " + this.score);
 		$("#lives").text("Lives: " + this.player.lives);
 	}
                           
 	Game.prototype.spawnAliens = function() {
+		//For the current number of aliens, put a new Alien in the aliens array and put it on the screen
 		this.alienNumber ++;
 		for (var i = 0; i <	this.alienNumber; i++) {
 			if (i < this.aliensPerRow) {
@@ -50,17 +53,22 @@ $(document).ready(function() {
 	}
 
 	Game.prototype.checkKeys = function() {
+		//Check the keys and perform appropriate actions
+		//D key (right)
 		if (this.keyMap[68] && this.player.x < $(window).width() - 10 - this.player.width) {
 			this.player.move(10,0);
 		} else if (this.keyMap[65] && this.player.x > 10) {
+			//A key (left)
 			this.player.move(-10,0);
 		} else if (this.keyMap[71] && this.playerLaser === "") {
+			//G key (fire)
 			this.playerLaser = new Laser(this.player.x, this.player.y, -10, 25, 10, 0, "bullet");
 			$("body").append(this.playerLaser.buildHtml());
 		}
 	}
 
 	Game.prototype.collission = function(x1,y1,w1,h1,x2,y2,w2,h2) {
+		//Check for collissions (bounding box)
 		var r1 = w1 + x1;
 		var b1 = h1 + y1;
 		var r2 = w2 + x2;
@@ -74,6 +82,7 @@ $(document).ready(function() {
 	}
 
 	Game.prototype.manageLasers = function() {
+		//Remove the lasers when they leave the screen
 		if (this.playerLaser != "") {
 			this.playerLaser.move(0,-10);
 			if (this.playerLaser.y < 0) {
@@ -91,6 +100,7 @@ $(document).ready(function() {
 	}
 
 	Game.prototype.manageAliens = function() {
+		//Find the leftmost and rightmost aliens
 		var highestX = 0;
 		var lowestX = 0;
 		for (var i = 0; i < this.aliens.length; i++) {
@@ -100,11 +110,13 @@ $(document).ready(function() {
 				lowestX = i;
 			}
 		}
+		//Find which direction the aliens should be going
 		if (this.aliens[highestX].x > $(window).width() - this.aliens[0].width && this.alienDirection == "right") {
 			this.alienDirection = "left";
 		} else if (this.aliens[lowestX].x < 0 && this.alienDirection == "left") {
 			this.alienDirection = "right";
 		}
+		//Manage the animate counter for animating the aliens by changing sprites
 		if (this.animateCounter > this.animateSpeed) {
 			this.animateCounter = 0;
 			if (this.animateIndex < this.alienSprites.length) {
@@ -115,15 +127,19 @@ $(document).ready(function() {
 		} else {
 			this.animateCounter ++;
 		}
+		//Loop through all aliens
 		for (var i = 0; i < this.aliens.length; i++) {
+			//Change the alien sprites for animation if it is time
 			if (this.alienSprites[this.animateIndex] !== this.aliens[i].sprite) {
 				this.aliens[i].changeImage(this.alienSprites[this.animateIndex]);
 			}
+			//Move the aliens based on the current direction
 			if (this.alienDirection === "right") {
 				this.aliens[i].move(5 + (this.score/2),this.score / 40);
 			} else {
 				this.aliens[i].move(-5 - (this.score/2),this.score / 40);
 			}
+			//Check if the player has shot an alien
 			if (this.playerLaser !== "") {
 				if (this.collission(this.aliens[i].x, this.aliens[i].y, this.aliens[i].width, this.aliens[i].height,this.playerLaser.x, this.playerLaser.y, this.playerLaser.width, this.playerLaser.height)) {
 					this.score ++;
@@ -135,6 +151,7 @@ $(document).ready(function() {
 				}
 			}
 		}
+		//Make a random alien shoot a laser if it is time
 		if (this.alienFireCooldown < this.alienFireCounter && this.alienLaser === "") {
 			var randomAlien = Math.floor(Math.random() * this.aliens.length);
 			this.alienLaser = new Laser(this.aliens[randomAlien].x, this.aliens[randomAlien].y, 6 + this.score, 25, 10, 0, "alienLaser");
@@ -144,12 +161,15 @@ $(document).ready(function() {
 			this.alienFireCounter++;
 			this.alienFireCooldown = 200 - (this.score * 4);
 		}
+		//Spawn more aliens if there is none left
 		if (this.aliens.length < 1) {
 			this.spawnAliens();
 		}
 	}
 
 	Game.prototype.gameLoop = function() {
+		//Main game loop
+		//If the player has not died yet
 		if (!this.endGame) {
 			game.manageLasers();
 			game.checkKeys();
@@ -166,10 +186,13 @@ $(document).ready(function() {
 					}
 				}
 			}
+			//End game if the aliens reach the bottom of the screen
 			if (game.aliens[0].y > $(window).height() - game.player.height - game.aliens[0].height) {
 				this.endGame = true;
 			}
+		//If the game has ended
 		} else {
+			//Stop running game loop and display the score
 			clearInterval(this.interval);
 			$("body").empty();
 			$("body").append("<div class=\"endGame\"><h2>You died! Score: " + game.score + "</h2></div>");
@@ -187,6 +210,7 @@ $(document).ready(function() {
 	}
 
 	Player.prototype.move = function(xMove, yMove) {
+		//Function for moving the player
 		this.x += xMove;
 		this.y += yMove;
 		$("#player").css("top", this.y + "px");
@@ -194,10 +218,12 @@ $(document).ready(function() {
 	}
 
 	Player.prototype.buildHtml = function() {
+		//Put together the required HTML for the player
 		return "<div id=\"player\"><img id=\"playerImg\" src=\"" + this.sprites[this.lives - 1] + "\" width=\"" + this.width + "\" height=\"" + this.height + "\"></div>";
 	}
 
 	Player.prototype.changeSprite = function() {
+		//Change the player sprite if the player has been shot and is damaged
 		$("#playerImg").attr("src", this.sprites[this.lives - 1])
 	}
 
@@ -213,15 +239,18 @@ $(document).ready(function() {
 	}
 
 	Laser.prototype.move = function() {
+		//Function for moving the laser based on it's ySpeed
 		this.y += this.ySpeed;
 		$("." + this.className).css("top", this.y + "px");
 	}
 
 	Laser.prototype.buildHtml = function() {
+		//Build required HTML for the laser
 		return "<div id=\"" + this.id + "\" class=\""+ this.className + "\" style=\"height: " + this.height + "px; width: " + this.width + "px; top: " + this.y + "px;left: " + this.x + "px;\"></div>";
 	}
 
 	Laser.prototype.die = function() {
+		//Get rid of the laser when this function is called
 		$("." + this.className).remove();
 	}
 
@@ -236,15 +265,18 @@ $(document).ready(function() {
 	}
 
 	Alien.prototype.buildHtml = function() {
+		//Build required HTML for the Alien
 		return "<div id=\"" + this.id + "\" class=\"alien\" style=\"height:" + this.height + "px; width: " + this.width + "top: " + this.y + "px;left: " + this.x + "px;\"><img src=\"" + this.sprite + "\" class=\"alien-img\"></div>";
 	}
 
 	Alien.prototype.changeImage = function(sprite) {
+		//Change this aliens sprite to the passed in sprite
 		this.sprite = sprite;
 		$(".alien#" + this.id + " img").attr("src", this.sprite);
 	}
 
 	Alien.prototype.move = function(xMove, yMove) {
+		//Move the alien by the provided coordinates
 		this.x += xMove;
 		this.y += yMove;
 		$(".alien#" + this.id).css("top", this.y + "px");
@@ -252,13 +284,16 @@ $(document).ready(function() {
 	}
 
 	Alien.prototype.die = function() {
+		//Get rid of the alien from the document
 		$(".alien#" + this.id).remove();
 	}
 
 	function init() {
+		//Create a new game object
 		game = new Game(new Player(20, $(window).height() - 60, 50, 50, 3,["assets/player2.png","assets/player1.png","assets/player.png"]), "", [], "", ["assets/alien.png", "assets/alien1.png", "assets/alien2.png"], 0, 5,"right", 0, 200, 0, 0, 25, false, {68: false, 65: false, 71: false}, 0);
 	}
 
+	//Key handlers
 	$(document).keydown(function(e) {
 		if (e.keyCode in game.keyMap) {
 			game.keyMap[e.keyCode] = true;
