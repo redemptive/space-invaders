@@ -12,7 +12,7 @@ A simple browser based space invaders game.
 - JQuery
 
 ## Installation and usage
-Simply clone the repository and open start.html to play.
+Either clone the repository and open start.html to play or go to http://redemptive.github.io/space-invaders
 ### Controls and Gameplay
 - A key, move left
 - D key, move right
