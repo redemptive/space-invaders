@@ -1,7 +1,7 @@
 $(document).ready(function() {
 
 	var game;
-
+	
 	//Game constructor
 	function Game(player, playerLaser, aliens, alienLaser, alienSprites, alienNumber, aliensPerRow, alienDirection, alienFireCounter, alienFireCooldown, animateCounter, animateIndex, animateSpeed, endGame, keyMap, score) {
 		this.player = player;
