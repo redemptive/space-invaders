@@ -1,7 +1,5 @@
 $(document).ready(function() {
 
-	var game;
-
 	class Game {
 		constructor(player, playerLaser, aliens, alienLaser, alienSprites, alienNumber, aliensPerRow, alienDirection, alienFireCounter, alienFireCooldown, animateCounter, animateIndex, animateSpeed, endGame, keyMap, score) {
 			this.player = player;
@@ -48,7 +46,7 @@ $(document).ready(function() {
 				} else {
 					this.aliens[i] = new Alien((i - 5)*100, 120, i, 100, 100, this.alienSprites[this.animateIndex]);
 				}
-				$('body').append(this.aliens[i].buildHtml());
+				$('body').append(this.aliens[i].html);
 			}
 		}
 
@@ -63,16 +61,16 @@ $(document).ready(function() {
 			} else if (this.keyMap[71] && this.playerLaser === '') {
 				//G key (fire)
 				this.playerLaser = new Laser(this.player.x, this.player.y, -10, 25, 10, 0, 'bullet');
-				$('body').append(this.playerLaser.buildHtml());
+				$('body').append(this.playerLaser.html);
 			}
 		}
 
 		collission(x1,y1,w1,h1,x2,y2,w2,h2) {
 			//Check for collissions (bounding box)
-			var r1 = w1 + x1;
-			var b1 = h1 + y1;
-			var r2 = w2 + x2;
-			var b2 = h2 + y2;
+			let r1 = w1 + x1;
+			let b1 = h1 + y1;
+			let r2 = w2 + x2;
+			let b2 = h2 + y2;
 							
 			if (x1 < r2 && r1 > x2 && y1 < b2 && b1 > y2) {
 				return true;
@@ -155,7 +153,7 @@ $(document).ready(function() {
 			if (this.alienFireCooldown < this.alienFireCounter && this.alienLaser === '') {
 				var randomAlien = Math.floor(Math.random() * this.aliens.length);
 				this.alienLaser = new Laser(this.aliens[randomAlien].x, this.aliens[randomAlien].y, 6 + this.score, 25, 10, 0, 'alienLaser');
-				$('body').append(this.alienLaser.buildHtml());
+				$('body').append(this.alienLaser.html);
 				this.alienFireCounter = 0;
 			} else {
 				this.alienFireCounter++;
@@ -200,15 +198,25 @@ $(document).ready(function() {
 		}
 	}
 
-	//Player constructor
-	class Player{
-		constructor(x, y, height, width, lives, sprites) {
+	class GameObject {
+		constructor(x, y, width, height) {
 			this.x = x;
 			this.y = y;
-			this.height = height;
 			this.width = width;
+			this.height = height;
+		}
+	}
+
+	//Player constructor
+	class Player extends GameObject {
+		constructor(x, y, height, width, lives, sprites) {
+			super(x, y, height, width);
 			this.lives = lives;
 			this.sprites = sprites;
+		}
+
+		get html() {
+			return `<div id="player"><img id="playerImg" src="${this.sprites[this.lives - 1]}" width="${this.width}" height="${this.height}"></div>`;
 		}
 
 		move(xMove, yMove) {
@@ -219,10 +227,6 @@ $(document).ready(function() {
 			$('#player').css('left', `${this.x}px`);
 		}
 
-		get html() {
-			return `<div id="player"><img id="playerImg" src="${this.sprites[this.lives - 1]}" width="${this.width}" height="${this.height}"></div>`;
-		}
-
 		changeSprite() {
 			//Change the player sprite if the player has been shot and is damaged
 			$('#playerImg').attr('src', this.sprites[this.lives - 1]);
@@ -230,69 +234,61 @@ $(document).ready(function() {
 	}
 
 	//Laser constructor
-	function Laser(x, y, ySpeed, height, width, id, className) {
-		this.x = x;
-		this.y = y;
-		this.height = height;
-		this.width = width;
-		this.id = id;
-		this.ySpeed = ySpeed;
-		this.className = className;
-	}
+	class Laser extends GameObject{
+		constructor(x, y, ySpeed, height, width, id, className) {
+			super(x, y, width, height);
+			this.id = id;
+			this.ySpeed = ySpeed;
+			this.className = className;
+		}
 
-	Laser.prototype.move = function() {
-		//Function for moving the laser based on it's ySpeed
-		this.y += this.ySpeed;
-		$("." + this.className).css("top", this.y + "px");
-	}
+		get html() {
+			return `<div id="${this.id}" class="${this.className}" style="height: ${this.height}px; width: ${this.width}px; top: ${this.y}px;left: ${this.x}px;"></div>`;
+		}
 
-	Laser.prototype.buildHtml = function() {
-		//Build required HTML for the laser
-		return "<div id=\"" + this.id + "\" class=\""+ this.className + "\" style=\"height: " + this.height + "px; width: " + this.width + "px; top: " + this.y + "px;left: " + this.x + "px;\"></div>";
-	}
+		move() {
+			//Function for moving the laser based on it's ySpeed
+			this.y += this.ySpeed;
+			$(`.${this.className}`).css('top', `${this.y}px`);
+		}
 
-	Laser.prototype.die = function() {
-		//Get rid of the laser when this function is called
-		$("." + this.className).remove();
+		die() {
+			//Get rid of the laser when this function is called
+			$(`.${this.className}`).remove();
+		}
 	}
 
 	//Alien constructor
-	function Alien(x, y, id, height, width, sprite) {
-		this.x = x;
-		this.y = y;
-		this.id = id;
-		this.height = height;
-		this.width = width;
-		this.sprite = sprite;
-	}
+	class Alien extends GameObject {
+		constructor(x, y, id, height, width, sprite) {
+			super(x, y, width, height);
+			this.id = id;
+			this.sprite = sprite;
+		}
 
-	Alien.prototype.buildHtml = function() {
-		//Build required HTML for the Alien
-		return "<div id=\"" + this.id + "\" class=\"alien\" style=\"height:" + this.height + "px; width: " + this.width + "top: " + this.y + "px;left: " + this.x + "px;\"><img src=\"" + this.sprite + "\" class=\"alien-img\"></div>";
-	}
+		get html() {
+			//Build required HTML for the Alien
+			return `<div id="${this.id}" class="alien" style="height:${this.height}px; width:${this.width}; top: ${this.y}px; left:${this.x}px"><img src="${this.sprite}" class="alien-img"></div>`;
+		}
 
-	Alien.prototype.changeImage = function(sprite) {
-		//Change this aliens sprite to the passed in sprite
-		this.sprite = sprite;
-		$(".alien#" + this.id + " img").attr("src", this.sprite);
-	}
+		changeImage(sprite) {
+			//Change this aliens sprite to the passed in sprite
+			this.sprite = sprite;
+			$(`.alien#${this.id} img`).attr('src', this.sprite);
+		}
 
-	Alien.prototype.move = function(xMove, yMove) {
-		//Move the alien by the provided coordinates
-		this.x += xMove;
-		this.y += yMove;
-		$(".alien#" + this.id).css("top", this.y + "px");
-		$(".alien#" + this.id).css("left", this.x + "px");
-	}
+		move(xMove, yMove) {
+			//Move the alien by the provided coordinates
+			this.x += xMove;
+			this.y += yMove;
+			$(`.alien#${this.id}`).css('top', `${this.y}px`);
+			$(`.alien#${this.id}`).css('left', `${this.x}px`);
+		}
 
-	Alien.prototype.die = function() {
-		//Get rid of the alien from the document
-		$(".alien#" + this.id).remove();
-	}
-
-	function init() {
-		//Create a new game object
-		game = new Game(new Player(20, $(window).height() - 60, 50, 50, 3,["assets/player2.png","assets/player1.png","assets/player.png"]), "", [], "", ["assets/alien.png", "assets/alien1.png", "assets/alien2.png"], 0, 5,"right", 0, 200, 0, 0, 25, false, {68: false, 65: false, 71: false}, 0);
+		die() {
+			//Get rid of the alien from the document
+			$(`.alien#${this.id}`).remove();
+		}
 	}
 
 	//Key handlers
@@ -305,5 +301,6 @@ $(document).ready(function() {
 			game.keyMap[e.keyCode] = false;
 		}
 	});
-	init();
+	
+	let game = new Game(new Player(20, $(window).height() - 60, 50, 50, 3,['assets/player2.png','assets/player1.png','assets/player.png']), '', [], '', ['assets/alien.png', 'assets/alien1.png', 'assets/alien2.png'], 0, 5,'right', 0, 200, 0, 0, 25, false, {68: false, 65: false, 71: false}, 0);
 });
