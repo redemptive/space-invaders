@@ -28,27 +28,27 @@ $(document).ready(function() {
 
 		initScreen() {
 			//Draw player, score and lives to the screen
-			$("body").append(this.player.buildHtml());
-			$("body").append("<div id=\"score\">Score: " + this.score + "</div>");
-			$("body").append("<div id=\"lives\">Lives: " + this.player.lives + "</div>");
+			$('body').append(this.player.html);
+			$('body').append(`<div id="score">Score: ${this.score}</div>`);
+			$('body').append(`<div id="lives">Lives: ${this.player.lives}</div>`);
 		}
 		
 		updateHud() {
 			//Update score and lives when they change
-			$("#score").text("Score: " + this.score);
-			$("#lives").text("Lives: " + this.player.lives);
+			$('#score').text(`Score: ${this.score}`);
+			$('#lives').text(`Lives: ${this.player.lives}`);
 		}
 
 		spawnAliens() {
 			//For the current number of aliens, put a new Alien in the aliens array and put it on the screen
 			this.alienNumber ++;
-			for (var i = 0; i <	this.alienNumber; i++) {
+			for (let i = 0; i <	this.alienNumber; i++) {
 				if (i < this.aliensPerRow) {
 					this.aliens[i] = new Alien(i*100, 0, i, 100, 100, this.alienSprites[this.animateIndex]);
 				} else {
 					this.aliens[i] = new Alien((i - 5)*100, 120, i, 100, 100, this.alienSprites[this.animateIndex]);
 				}
-				$("body").append(this.aliens[i].buildHtml());
+				$('body').append(this.aliens[i].buildHtml());
 			}
 		}
 
@@ -60,10 +60,10 @@ $(document).ready(function() {
 			} else if (this.keyMap[65] && this.player.x > 10) {
 				//A key (left)
 				this.player.move(-10,0);
-			} else if (this.keyMap[71] && this.playerLaser === "") {
+			} else if (this.keyMap[71] && this.playerLaser === '') {
 				//G key (fire)
-				this.playerLaser = new Laser(this.player.x, this.player.y, -10, 25, 10, 0, "bullet");
-				$("body").append(this.playerLaser.buildHtml());
+				this.playerLaser = new Laser(this.player.x, this.player.y, -10, 25, 10, 0, 'bullet');
+				$('body').append(this.playerLaser.buildHtml());
 			}
 		}
 
@@ -83,18 +83,18 @@ $(document).ready(function() {
 
 		manageLasers() {
 			//Remove the lasers when they leave the screen
-			if (this.playerLaser != "") {
+			if (this.playerLaser != '') {
 				this.playerLaser.move(0,-10);
 				if (this.playerLaser.y < 0) {
 					this.playerLaser.die();
-					this.playerLaser = "";
+					this.playerLaser = '';
 				}
 			}
-			if (this.alienLaser != "") {
+			if (this.alienLaser != '') {
 				this.alienLaser.move();
 				if (this.alienLaser.y > $(window).height()) {
 					this.alienLaser.die();
-					this.alienLaser = "";
+					this.alienLaser = '';
 				}
 			}
 		}
@@ -103,7 +103,7 @@ $(document).ready(function() {
 			//Find the leftmost and rightmost aliens
 			var highestX = 0;
 			var lowestX = 0;
-			for (var i = 0; i < this.aliens.length; i++) {
+			for (let i = 0; i < this.aliens.length; i++) {
 				if (this.aliens[i].x > this.aliens[highestX].x) {
 					highestX = i;
 				} else if (this.aliens[i].x < this.aliens[lowestX].x) {
@@ -111,10 +111,10 @@ $(document).ready(function() {
 				}
 			}
 			//Find which direction the aliens should be going
-			if (this.aliens[highestX].x > $(window).width() - this.aliens[0].width && this.alienDirection == "right") {
-				this.alienDirection = "left";
-			} else if (this.aliens[lowestX].x < 0 && this.alienDirection == "left") {
-				this.alienDirection = "right";
+			if (this.aliens[highestX].x > $(window).width() - this.aliens[0].width && this.alienDirection == 'right') {
+				this.alienDirection = 'left';
+			} else if (this.aliens[lowestX].x < 0 && this.alienDirection == 'left') {
+				this.alienDirection = 'right';
 			}
 			//Manage the animate counter for animating the aliens by changing sprites
 			if (this.animateCounter > this.animateSpeed) {
@@ -128,34 +128,34 @@ $(document).ready(function() {
 				this.animateCounter ++;
 			}
 			//Loop through all aliens
-			for (var i = 0; i < this.aliens.length; i++) {
+			for (let i = 0; i < this.aliens.length; i++) {
 				//Change the alien sprites for animation if it is time
 				if (this.alienSprites[this.animateIndex] !== this.aliens[i].sprite) {
 					this.aliens[i].changeImage(this.alienSprites[this.animateIndex]);
 				}
 				//Move the aliens based on the current direction
-				if (this.alienDirection === "right") {
+				if (this.alienDirection === 'right') {
 					this.aliens[i].move(5 + (this.score/2),this.score / 40);
 				} else {
 					this.aliens[i].move(-5 - (this.score/2),this.score / 40);
 				}
 				//Check if the player has shot an alien
-				if (this.playerLaser !== "") {
+				if (this.playerLaser !== '') {
 					if (this.collission(this.aliens[i].x, this.aliens[i].y, this.aliens[i].width, this.aliens[i].height,this.playerLaser.x, this.playerLaser.y, this.playerLaser.width, this.playerLaser.height)) {
 						this.score ++;
 						this.updateHud();
 						this.aliens[i].die();
 						this.aliens.splice(this.aliens.indexOf(this.aliens[i]),1);
 						this.playerLaser.die();
-						this.playerLaser = "";
+						this.playerLaser = '';
 					}
 				}
 			}
 			//Make a random alien shoot a laser if it is time
-			if (this.alienFireCooldown < this.alienFireCounter && this.alienLaser === "") {
+			if (this.alienFireCooldown < this.alienFireCounter && this.alienLaser === '') {
 				var randomAlien = Math.floor(Math.random() * this.aliens.length);
-				this.alienLaser = new Laser(this.aliens[randomAlien].x, this.aliens[randomAlien].y, 6 + this.score, 25, 10, 0, "alienLaser");
-				$("body").append(this.alienLaser.buildHtml());
+				this.alienLaser = new Laser(this.aliens[randomAlien].x, this.aliens[randomAlien].y, 6 + this.score, 25, 10, 0, 'alienLaser');
+				$('body').append(this.alienLaser.buildHtml());
 				this.alienFireCounter = 0;
 			} else {
 				this.alienFireCounter++;
@@ -174,10 +174,10 @@ $(document).ready(function() {
 				game.manageLasers();
 				game.checkKeys();
 				game.manageAliens();
-				if (this.alienLaser != "") {
+				if (this.alienLaser != '') {
 					if (game.collission(game.player.x, game.player.y, game.player.width, game.player.height, game.alienLaser.x, game.alienLaser.y, game.alienLaser.width, game.alienLaser.height)) {
 						game.alienLaser.die();
-						game.alienLaser = "";
+						game.alienLaser = '';
 						game.player.lives --;
 						game.updateHud();
 						game.player.changeSprite();
@@ -194,38 +194,39 @@ $(document).ready(function() {
 			} else {
 				//Stop running game loop and display the score
 				clearInterval(this.interval);
-				$("body").empty();
-				$("body").append("<div class=\"endGame\"><h2>You died! Score: " + game.score + "</h2></div>");
+				$('body').empty();
+				$('body').append(`<div class="endGame"><h2>You died! Score: ${game.score}</h2></div>`);
 			}
 		}
 	}
 
 	//Player constructor
-	function Player(x, y, height, width, lives, sprites) {
-		this.x = x;
-		this.y = y;
-		this.height = height;
-		this.width = width;
-		this.lives = lives;
-		this.sprites = sprites;
-	}
+	class Player{
+		constructor(x, y, height, width, lives, sprites) {
+			this.x = x;
+			this.y = y;
+			this.height = height;
+			this.width = width;
+			this.lives = lives;
+			this.sprites = sprites;
+		}
 
-	Player.prototype.move = function(xMove, yMove) {
-		//Function for moving the player
-		this.x += xMove;
-		this.y += yMove;
-		$("#player").css("top", this.y + "px");
-		$("#player").css("left", this.x + "px");
-	}
+		move(xMove, yMove) {
+			//Function for moving the player
+			this.x += xMove;
+			this.y += yMove;
+			$('#player').css('top', `${this.y}px`);
+			$('#player').css('left', `${this.x}px`);
+		}
 
-	Player.prototype.buildHtml = function() {
-		//Put together the required HTML for the player
-		return "<div id=\"player\"><img id=\"playerImg\" src=\"" + this.sprites[this.lives - 1] + "\" width=\"" + this.width + "\" height=\"" + this.height + "\"></div>";
-	}
+		get html() {
+			return `<div id="player"><img id="playerImg" src="${this.sprites[this.lives - 1]}" width="${this.width}" height="${this.height}"></div>`;
+		}
 
-	Player.prototype.changeSprite = function() {
-		//Change the player sprite if the player has been shot and is damaged
-		$("#playerImg").attr("src", this.sprites[this.lives - 1])
+		changeSprite() {
+			//Change the player sprite if the player has been shot and is damaged
+			$('#playerImg').attr('src', this.sprites[this.lives - 1]);
+		}
 	}
 
 	//Laser constructor
